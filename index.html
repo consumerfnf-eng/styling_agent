@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styling Agent</title>
+<style>
+:root{
+  --text:#1d1d1f;--sub:#6e6e73;--faint:#8e8e93;
+  --blue:#0a84ff;--blue-d:#0071e3;--green:#34c759;--red:#ff3b30;
+  --glass:rgba(255,255,255,.42);--glass-hi:rgba(255,255,255,.66);
+  --stroke:rgba(255,255,255,.72);--line:rgba(60,60,67,.12);
+  --shadow:0 10px 40px rgba(31,45,70,.12);
+  --hl:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Pretendard","Noto Sans KR","Helvetica Neue",sans-serif;color:var(--text);min-height:100vh;background:#dfe6ec;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(55% 45% at 12% 8%,#c7d7e6 0%,transparent 62%),
+  radial-gradient(45% 40% at 88% 14%,#eef2f5 0%,transparent 60%),
+  radial-gradient(50% 45% at 78% 88%,#cdd9d2 0%,transparent 60%),
+  radial-gradient(45% 40% at 8% 92%,#d6dde8 0%,transparent 60%),
+  linear-gradient(160deg,#eaeff3 0%,#d3dce5 100%);}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--stroke);box-shadow:var(--hl),var(--shadow);}
+
+/* header */
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px;}
+header{position:sticky;top:0;z-index:20;padding:18px 0 14px;}
+.hbar{display:flex;align-items:center;justify-content:space-between;gap:16px;border-radius:26px;padding:14px 18px 14px 20px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(145deg,#fff 0%,#dfe8f1 55%,#bccbdb 100%);box-shadow:var(--hl),0 4px 14px rgba(31,45,70,.14);display:flex;align-items:center;justify-content:center;color:#3a4a5c;}
+.mark svg.i{width:20px;height:20px;}
+.brand h1{font-size:22px;font-weight:700;letter-spacing:-.025em;line-height:1.1;}
+.brand small{display:block;font-size:11.5px;color:var(--sub);font-weight:500;margin-top:3px;letter-spacing:0;}
+.hright{display:flex;align-items:center;gap:10px;}
+.seg{display:inline-flex;padding:4px;border-radius:999px;gap:2px;background:rgba(255,255,255,.35);border:1px solid var(--stroke);box-shadow:var(--hl);}
+.tab{border:none;background:transparent;color:var(--sub);font:inherit;font-size:13px;font-weight:500;padding:8px 15px;border-radius:999px;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab:hover{color:var(--text);}
+.tab.on{background:rgba(255,255,255,.92);color:var(--text);font-weight:600;box-shadow:0 2px 10px rgba(31,45,70,.12);}
+.tab .cnt{font-size:10.5px;font-weight:600;background:rgba(60,60,67,.1);color:var(--sub);border-radius:999px;padding:1px 7px;min-width:20px;text-align:center;}
+.tab.on .cnt{background:var(--blue);color:#fff;}
+.icbtn{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);border:1px solid var(--stroke);background:rgba(255,255,255,.5);box-shadow:var(--hl);transition:all .2s;}
+.icbtn:hover{background:rgba(255,255,255,.85);}
+.icbtn svg.i{width:18px;height:18px;}
+
+/* settings */
+.setp{display:none;margin-top:10px;border-radius:24px;padding:18px 20px;}
+.setp.on{display:block;}
+
+/* layout */
+main{padding:6px 0 60px;}
+.panel{display:none;}
+.panel.on{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.card{border-radius:26px;padding:22px 24px;margin-bottom:16px;}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.card-h h2{font-size:17px;font-weight:600;letter-spacing:-.02em;}
+.card-h .step{font-size:11px;font-weight:600;color:var(--blue);background:rgba(10,132,255,.1);border-radius:999px;padding:3px 9px;}
+.card-h .r{margin-left:auto;}
+.lead{font-size:13px;color:var(--sub);line-height:1.6;}
+.lead b{color:var(--text);font-weight:600;}
+.sec{font-size:12px;font-weight:600;color:var(--sub);margin:20px 0 9px;display:flex;align-items:center;gap:8px;}
+.sec em{font-style:normal;font-weight:400;color:var(--faint);}
+.sec .r{margin-left:auto;}
+
+/* controls */
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);color:var(--text);font-size:13px;cursor:pointer;transition:all .18s;user-select:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9);}
+.chip:hover{background:rgba(255,255,255,.82);}
+.chip.on{background:var(--blue);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(10,132,255,.32);font-weight:500;}
+.cgl{flex-basis:100%;font-size:10.5px;font-weight:600;color:var(--faint);letter-spacing:.02em;margin-top:6px;}
+.cgl:first-child{margin-top:0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.fld label{font-size:12px;font-weight:600;color:var(--sub);display:block;margin-bottom:6px;}
+.inp,.sel{width:100%;font:inherit;font-size:13px;color:var(--text);padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 2px rgba(31,45,70,.06);outline:none;transition:all .2s;}
+.inp:focus,.sel:focus{background:rgba(255,255,255,.85);border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12);}
+.sel{appearance:none;cursor:pointer;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236e6e73' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.krow{display:flex;gap:8px;}
+.krow .inp{flex:1;min-width:0;}
+.st{font-size:12px;color:var(--faint);margin-top:6px;}
+.st.ok{color:#248a3d;}
+.btn{font:inherit;font-size:13px;font-weight:500;padding:9px 16px;border-radius:999px;cursor:pointer;color:var(--text);background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);box-shadow:var(--hl),0 2px 8px rgba(31,45,70,.06);transition:all .18s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.btn:hover{background:rgba(255,255,255,.9);}
+.btn.blue{background:var(--blue);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(10,132,255,.3);}
+.btn.blue:hover{background:var(--blue-d);}
+.btn.sm{padding:6px 12px;font-size:12px;}
+.btn.danger{color:var(--red);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.xta{width:100%;font:inherit;font-size:13px;color:var(--text);padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);outline:none;resize:vertical;min-height:64px;line-height:1.6;}
+.xta:focus{background:rgba(255,255,255,.85);border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12);}
+.xta::placeholder,.inp::placeholder{color:var(--faint);}
+.sw{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;user-select:none;}
+.sw input{display:none;}
+.sw .tr{width:42px;height:25px;border-radius:999px;background:rgba(120,120,128,.24);position:relative;transition:background .2s;flex-shrink:0;}
+.sw .tr::after{content:'';position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .22s cubic-bezier(.3,.7,.4,1.2);}
+.sw input:checked+.tr{background:var(--green);}
+.sw input:checked+.tr::after{transform:translateX(17px);}
+.sw small{color:var(--faint);}
+.nseg{display:inline-flex;padding:3px;border-radius:999px;background:rgba(120,120,128,.12);gap:2px;}
+.nseg button{font:inherit;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--sub);width:40px;height:30px;border-radius:999px;cursor:pointer;}
+.nseg button.on{background:#fff;color:var(--text);font-weight:600;box-shadow:0 2px 8px rgba(31,45,70,.14);}
+.vrow{display:flex;align-items:center;gap:12px;margin-top:16px;}
+.vrow .l{font-size:12px;font-weight:600;color:var(--sub);}
+
+/* face / model boxes */
+.idbox{display:flex;gap:16px;align-items:center;}
+.fthumb{width:72px;height:72px;border-radius:20px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.5);border:1px dashed rgba(60,60,67,.2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+.fthumb img{width:100%;height:100%;object-fit:cover;}
+.mthumb{width:116px;height:150px;border-radius:20px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.5);border:1px dashed rgba(60,60,67,.2);display:flex;align-items:center;justify-content:center;font-size:11.5px;color:var(--faint);text-align:center;line-height:1.5;position:relative;}
+.mthumb img{width:100%;height:100%;object-fit:cover;object-position:top;cursor:zoom-in;}
+.mthumb.ok{border:1px solid rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(31,45,70,.14);}
+.idbox h3{font-size:15px;font-weight:600;margin-bottom:4px;}
+.idbox p{font-size:12.5px;color:var(--sub);line-height:1.55;margin-bottom:10px;}
+.brow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.okdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:1px;}
+
+/* upload */
+.upload{border:1.5px dashed rgba(60,60,67,.2);border-radius:22px;padding:28px 20px;text-align:center;cursor:pointer;background:rgba(255,255,255,.3);position:relative;transition:all .2s;}
+.upload:hover,.upload.drag{border-color:var(--blue);background:rgba(10,132,255,.06);}
+.upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload .ic{width:44px;height:44px;border-radius:14px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.8);box-shadow:var(--hl),0 4px 12px rgba(31,45,70,.1);color:var(--blue);}
+.upload .ic svg.i{width:20px;height:20px;}
+.upload strong{display:block;font-size:14px;font-weight:600;margin-bottom:3px;}
+.upload p{font-size:12px;color:var(--sub);}
+.prev{display:none;margin-top:12px;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.4);}
+.prev img{width:100%;height:320px;object-fit:contain;display:block;}
+
+/* layer table */
+.laytbl{border-radius:18px;overflow:hidden;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.8);}
+.lrow{display:grid;grid-template-columns:36px 96px 1fr;align-items:center;border-bottom:1px solid var(--line);font-size:13px;}
+.lrow:last-child{border-bottom:none;}
+.lrow input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;margin-left:14px;}
+.lrow b{font-weight:600;font-size:12.5px;padding:11px 6px;}
+.lrow input[type=text]{width:100%;background:transparent;border:none;color:var(--text);padding:11px 14px;font:inherit;font-size:12.5px;outline:none;}
+.lrow input[type=text]:focus{background:rgba(255,255,255,.7);}
+.lrow.off b,.lrow.off input[type=text]{opacity:.35;text-decoration:line-through;}
+.lrow .badge{font-size:12px;color:var(--blue);padding:11px 14px;font-weight:500;}
+.lempty{padding:16px;font-size:12.5px;color:var(--sub);text-align:center;}
+.lnote{font-size:12.5px;color:var(--sub);margin-top:10px;line-height:1.6;}
+.cdots{display:flex;gap:6px;margin-top:10px;align-items:center;font-size:12px;color:var(--sub);}
+.cdot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(255,255,255,.9);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+
+/* slots */
+.slotgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.slot{border-radius:18px;padding:12px 6px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:rgba(255,255,255,.4);border:1.5px dashed rgba(60,60,67,.18);}
+.slot:hover{background:rgba(255,255,255,.7);}
+.slot.on{border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.75);box-shadow:0 4px 14px rgba(31,45,70,.1);}
+.slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.slot .sprev{width:100%;height:72px;object-fit:contain;border-radius:10px;display:none;margin-bottom:6px;}
+.slot.on .sprev{display:block;}
+.slot .si{font-size:22px;display:block;margin-bottom:4px;}
+.slot.on .si{display:none;}
+.slot .sl{font-size:12px;font-weight:600;display:block;margin-bottom:1px;}
+.slot .ss{font-size:10.5px;color:var(--faint);}
+.slot .clr{position:absolute;top:6px;right:6px;background:rgba(60,60,67,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;}
+.slot.on .clr{display:flex;}
+
+/* generate */
+.genbtn{width:100%;margin-top:22px;height:52px;border:none;border-radius:999px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;color:#fff;background:var(--blue);box-shadow:0 8px 24px rgba(10,132,255,.32),inset 0 1px 0 rgba(255,255,255,.3);transition:all .2s;letter-spacing:-.01em;}
+.genbtn:hover{background:var(--blue-d);transform:translateY(-1px);}
+.genbtn:disabled{background:rgba(120,120,128,.2);color:var(--faint);box-shadow:none;cursor:not-allowed;transform:none;}
+.loading{display:none;text-align:center;padding:22px;}
+.dots span{display:inline-block;width:7px;height:7px;background:var(--blue);border-radius:50%;margin:0 3px;animation:bou 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes bou{0%,80%,100%{transform:translateY(0);opacity:.35;}40%{transform:translateY(-6px);opacity:1;}}
+.lstep{margin-top:10px;font-size:13px;color:var(--sub);}
+.err{display:none;background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.25);color:#c4271c;padding:12px 16px;border-radius:16px;font-size:13px;margin-top:14px;line-height:1.5;}
+
+/* result cards */
+.igrid{display:grid;gap:14px;}
+.igrid.n1{grid-template-columns:minmax(0,520px);justify-content:center;}
+.igrid.n2{grid-template-columns:1fr 1fr;}
+.icrd{border-radius:22px;overflow:hidden;position:relative;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.85);box-shadow:0 8px 28px rgba(31,45,70,.12);}
+.icrd img{width:100%;display:block;cursor:zoom-in;}
+.zbtn{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);border:1px solid rgba(255,255,255,.85);box-shadow:var(--hl),0 4px 14px rgba(31,45,70,.16);transition:transform .2s;z-index:2;}
+.zbtn:hover{transform:scale(1.08);background:rgba(255,255,255,.88);}
+.zbtn svg.i{width:17px;height:17px;}
+.iov{position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:7px;border-radius:999px;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);border:1px solid rgba(255,255,255,.85);box-shadow:var(--hl),0 6px 18px rgba(31,45,70,.14);opacity:0;transform:translateY(6px);transition:all .22s;}
+.icrd:hover .iov{opacity:1;transform:none;}
+@media (hover:none){.iov{opacity:1;transform:none;}}
+.ab{font:inherit;font-size:12px;font-weight:500;color:var(--text);background:rgba(255,255,255,.7);border:none;padding:6px 11px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.ab:hover{background:#fff;}
+.ab.p{background:var(--blue);color:#fff;}
+.ab.p:hover{background:var(--blue-d);}
+.ab.d{color:var(--red);}
+.ab svg.i{width:14px;height:14px;}
+.iload{height:340px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--sub);font-size:13px;}
+.ifail{padding:28px 16px;font-size:12.5px;color:#c4271c;line-height:1.5;}
+.rlabel{font-size:12px;font-weight:600;color:var(--sub);margin:22px 0 12px;display:flex;align-items:center;gap:10px;}
+.rlabel::after{content:'';flex:1;height:1px;background:var(--line);}
+.pcrd{border-radius:18px;padding:16px;position:relative;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.8);}
+.ptxt{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:11px;line-height:1.7;color:#3a3a3c;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;}
+.pcrd .btn{position:absolute;top:10px;right:10px;}
+.pcrd .tag{display:inline-block;font-size:10.5px;font-weight:600;color:var(--blue);background:rgba(10,132,255,.1);padding:3px 9px;border-radius:999px;margin-bottom:10px;}
+
+/* gallery */
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+.gcard{border-radius:22px;overflow:hidden;position:relative;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.85);box-shadow:0 6px 22px rgba(31,45,70,.1);}
+.gimg{aspect-ratio:5/6;background:rgba(255,255,255,.35);position:relative;}
+.gimg img{width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;}
+.gcap{padding:10px 12px 12px;}
+.gcap b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcap>span{font-size:11px;color:var(--faint);}
+.gact{display:flex;gap:5px;align-items:center;margin-top:9px;}
+.gact .ab{background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);padding:6px 9px;}
+.gact .ab.p{background:var(--blue);color:#fff;border-color:transparent;}
+.gact .ab.d{margin-left:auto;}
+.gempty{padding:56px 20px;text-align:center;color:var(--sub);font-size:13.5px;line-height:1.7;}
+.gempty .ic{width:56px;height:56px;border-radius:18px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.7);box-shadow:var(--hl),0 4px 14px rgba(31,45,70,.1);color:var(--faint);}
+.gempty .ic svg.i{width:24px;height:24px;}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(222,229,236,.55);-webkit-backdrop-filter:blur(30px) saturate(150%);backdrop-filter:blur(30px) saturate(150%);}
+.lb.on{display:flex;animation:fade .2s ease;}
+.lb img{max-width:min(92vw,1100px);max-height:84vh;border-radius:22px;box-shadow:0 30px 80px rgba(31,45,70,.3);background:#fff;}
+.lbx{position:absolute;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);background:rgba(255,255,255,.65);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.9);box-shadow:var(--hl),0 6px 18px rgba(31,45,70,.16);}
+.lbx:hover{background:rgba(255,255,255,.92);}
+.lbx svg.i{width:20px;height:20px;}
+.lb-close{top:22px;right:22px;}
+.lb-prev{left:22px;top:50%;margin-top:-23px;}
+.lb-next{right:22px;top:50%;margin-top:-23px;}
+.lb-bar{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border-radius:999px;font-size:13px;color:var(--text);max-width:90vw;}
+.lb-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-bar em{font-style:normal;color:var(--faint);font-size:12px;}
+
+@media(max-width:760px){
+  .wrap{padding:0 14px;}
+  .hbar{flex-direction:column;align-items:stretch;}
+  .hright{justify-content:space-between;}
+  .seg{overflow-x:auto;max-width:calc(100% - 48px);}
+  .tab{padding:8px 11px;font-size:12.5px;}
+  .card{padding:18px 16px;border-radius:22px;}
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .slotgrid{grid-template-columns:repeat(3,1fr);}
+  .igrid.n2{grid-template-columns:1fr;}
+  .lrow{grid-template-columns:32px 72px 1fr;}
+  .mthumb{width:90px;height:120px;}
+  .ggrid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .lb-prev,.lb-next{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hbar glass">
+      <div class="brand">
+        <div class="mark"><svg class="i" viewBox="0 0 24 24"><path d="M9 3.5L12 6l3-2.5 4.5 2.5-1.5 4.5h-2V20.5h-8V10.5H6L4.5 6z"/></svg></div>
+        <div><h1>Styling Agent</h1><small>소비자전략팀</small></div>
+      </div>
+      <div class="hright">
+        <nav class="seg" id="tabs">
+          <button class="tab on" onclick="goTab(0)">모델 생성</button>
+          <button class="tab" onclick="goTab(1)">스타일링</button>
+          <button class="tab" onclick="goTab(2)">모델 갤러리 <span class="cnt" id="cntM">0</span></button>
+          <button class="tab" onclick="goTab(3)">스타일링 갤러리 <span class="cnt" id="cntS">0</span></button>
+        </nav>
+        <button class="icbtn" title="설정" onclick="togSet()"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/></svg></button>
+      </div>
+    </div>
+
+    <div class="setp glass" id="setp">
+      <div class="grid2">
+        <div class="fld">
+          <label>OpenAI API Key</label>
+          <div class="krow"><input class="inp" type="password" id="oaiKey" placeholder="sk-..." autocomplete="off"><button class="btn blue" onclick="saveOai()">저장</button></div>
+          <div class="st" id="oaiSt">미입력 · 브라우저에만 저장됩니다</div>
+        </div>
+        <div class="fld">
+          <label>배경 (공통)</label>
+          <select class="sel" id="cfgBg" onchange="setCfg('bg',this.value)">
+            <option value="musinsa">페일 그레이블루 스튜디오</option>
+            <option value="white">퓨어 화이트 스튜디오</option>
+            <option value="warm">웜 라이트그레이 스튜디오</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:12px;">
+        <div class="fld">
+          <label>출력 캔버스</label>
+          <select class="sel" id="cfgCanvas" onchange="setCfg('canvas',this.value)">
+            <option value="56">5:6 룩북 (좌우 배경 확장)</option>
+            <option value="raw">원본 2:3</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>타 브랜드 로고</label>
+          <select class="sel" id="cfgLogo" onchange="setCfg('logo',this.value==='1')">
+            <option value="1">제거 (MLB·Discovery·Sergio Tacchini·Duvetica만 허용)</option>
+            <option value="0">레퍼런스 로고 그대로</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ══════ TAB 0: 모델 생성 ══════ -->
+<section class="panel on" id="p0">
+  <div class="card glass">
+    <div class="card-h"><span class="step">STEP 1</span><h2>모델 생성</h2></div>
+    <p class="lead">무지 베이스 착장으로 <b>얼굴·헤어·체형·표정·포즈</b>를 먼저 잡습니다. 마음에 드는 후보에서 <b>확정</b>을 누르면 스타일링의 기준 모델이 되고, 모든 후보는 모델 갤러리에 저장됩니다.</p>
+  </div>
+
+  <div class="card glass">
+    <div class="idbox">
+      <div class="fthumb" id="fthumb">없음</div>
+      <div style="flex:1">
+        <h3>얼굴 고정 레퍼런스</h3>
+        <p>결과 카드의 <b>얼굴 고정</b> 버튼이나 얼굴 사진 업로드. 켜두면 프리셋 대신 이 얼굴·헤어로 생성됩니다.</p>
+        <div class="brow">
+          <label class="btn sm">업로드<input type="file" accept="image/*" id="faceIn" hidden></label>
+          <button class="btn sm" onclick="clearFace()">해제</button>
+          <label class="sw" style="margin-left:6px"><input type="checkbox" id="faceOn"><span class="tr"></span>고정 얼굴 사용</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass">
+    <div class="sec" style="margin-top:0">성별</div>
+    <div class="chips" id="genderG"></div>
+    <div class="sec">모델 프리셋 <em>얼굴·헤어 · 체형은 9등신 고정</em></div>
+    <div class="chips" id="presetG"></div>
+    <div class="sec">표정 · 무드</div>
+    <div class="chips" id="vibeG"></div>
+    <div class="sec">기본 포즈</div>
+    <div class="chips" id="poseG"></div>
+    <div class="sec">베이스 착장 <em>스타일링 때 전부 교체</em></div>
+    <div class="chips" id="baseG"></div>
+    <div class="sec">추가 지시 <em>선택</em></div>
+    <textarea class="xta" id="t0extra" placeholder="예: 귀 피어싱, 앞머리 조금 더 길게, 눈매 더 또렷하게"></textarea>
+    <div class="grid3" style="margin-top:16px;">
+      <div class="fld"><label>화질</label>
+        <select class="sel" id="t0qual" onchange="S.qual=this.value;saveS()">
+          <option value="low">빠름</option><option value="medium">보통</option><option value="high">고화질</option>
+        </select></div>
+      <div class="fld"><label>후보 수량</label>
+        <div class="nseg" id="nG0"><button data-n="1">1</button><button data-n="2">2</button><button data-n="4">4</button></div></div>
+    </div>
+    <button class="genbtn" id="gb0" onclick="runT0()">모델 생성하기</button>
+    <div class="loading" id="ld0"><div class="dots"><span></span><span></span><span></span></div><div class="lstep" id="ls0">생성 중...</div></div>
+    <div class="err" id="er0"></div>
+    <div id="rs0" style="display:none;">
+      <div class="rlabel">모델 후보</div>
+      <div class="igrid" id="ig0"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ TAB 1: 스타일링 ══════ -->
+<section class="panel" id="p1">
+  <div class="card glass">
+    <div class="idbox">
+      <div class="mthumb" id="mthumb">확정 모델<br>없음</div>
+      <div style="flex:1">
+        <div class="card-h" style="margin-bottom:6px"><span class="step">STEP 2</span><h2 id="mtitle">스타일링</h2></div>
+        <p id="mdesc">모델 생성 탭에서 확정하거나, 모델 사진을 직접 올리세요.</p>
+        <div class="brow">
+          <button class="btn sm" onclick="goTab(0)">모델 생성으로</button>
+          <button class="btn sm" onclick="goTab(2)">모델 갤러리에서 고르기</button>
+          <label class="btn sm">모델 사진 업로드<input type="file" accept="image/*" id="modelIn" hidden></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card glass">
+    <div class="card-h"><h2>착장 레퍼런스</h2></div>
+    <p class="lead">룩북·스트릿 사진 한 장을 넣으면 헤드웨어·반다나·러닝 선글라스·허리 묶음·스커트 레이어드·베스트까지 <b>레이어별로 자동 분석</b>합니다. 체크 해제로 제외하고, 문구는 직접 고칠 수 있습니다.</p>
+    <div class="upload" id="uzR" style="margin-top:14px">
+      <input type="file" id="fiR" accept="image/*">
+      <div class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 15.5l-4.5-4.5-7.5 8"/></svg></div>
+      <strong>착장 레퍼런스 업로드</strong>
+      <p>드래그 또는 클릭</p>
+    </div>
+    <div class="prev" id="pvR"><img id="piR" src="" alt=""></div>
+
+    <div class="sec">레이어 분석 <em>체크 해제 = 제외 · 문구 수정 가능</em><button class="btn sm r" id="reanBtn" onclick="analyzeRef(true)">다시 분석</button></div>
+    <div class="laytbl" id="layT"><div class="lempty">레퍼런스를 올리면 자동으로 분석됩니다.</div></div>
+    <div class="lnote" id="layNote"></div>
+    <div class="cdots" id="layPal"></div>
+
+    <div class="sec">개별 아이템 슬롯 <em>선택 · 해당 레이어를 이 이미지로 교체</em></div>
+    <div class="slotgrid" id="slotGrid"></div>
+  </div>
+
+  <div class="card glass">
+    <div class="card-h"><h2>스타일 옵션</h2></div>
+    <div class="sec">헤드웨어</div><div class="chips" id="hwG"></div>
+    <div class="sec">아이웨어</div><div class="chips" id="eyeG"></div>
+    <div class="sec">가방</div><div class="chips" id="bagG"></div>
+    <div class="sec">레이어링 추가 <em>복수 선택</em></div><div class="chips" id="layG"></div>
+    <div class="sec">소재 표현 강조 <em>복수 선택</em></div><div class="chips" id="matG"></div>
+    <div class="sec">표정</div><div class="chips" id="t1vibeG"></div>
+    <div class="sec">포즈</div><div class="chips" id="t1poseG"></div>
+    <div class="sec">MLB 로고</div><div class="chips" id="teamG"></div>
+    <div class="chips" id="mlbPosG" style="margin-top:8px;"></div>
+    <div class="sec">스타일 지시 <em>선택</em></div>
+    <textarea class="xta" id="t1extra" placeholder="예: 반다나 위에 캡 착용, 셔츠 밑단을 재킷 아래로 길게, 양말은 화이트"></textarea>
+    <div class="grid3" style="margin-top:16px;">
+      <div class="fld"><label>착장 충실도</label>
+        <select class="sel" id="t1fid" onchange="T.fid=this.value;saveT()">
+          <option value="similar">동일 재현</option><option value="remix">리믹스</option><option value="inspired">영감</option>
+        </select></div>
+      <div class="fld"><label>화질</label>
+        <select class="sel" id="t1q" onchange="T.qual=this.value;saveT()">
+          <option value="low">빠름</option><option value="medium">보통</option><option value="high">고화질</option>
+        </select></div>
+      <div class="fld"><label>생성 수량</label>
+        <div class="nseg" id="nG1"><button data-n="1">1</button><button data-n="2">2</button></div></div>
+    </div>
+    <button class="genbtn" id="gb1" disabled onclick="runT1()">확정 모델이 있어야 활성화</button>
+    <div class="loading" id="ld1"><div class="dots"><span></span><span></span><span></span></div><div class="lstep" id="ls1">스타일링 중...</div></div>
+    <div class="err" id="er1"></div>
+    <div id="rs1" style="display:none;">
+      <div class="rlabel">스타일링 결과</div>
+      <div class="igrid" id="ig1"></div>
+      <div class="rlabel">생성 프롬프트</div>
+      <div id="pc1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ TAB 2: 모델 갤러리 ══════ -->
+<section class="panel" id="p2">
+  <div class="card glass">
+    <div class="card-h"><h2>모델 갤러리</h2><button class="btn sm danger r" onclick="clearGallery('model')">전체 삭제</button></div>
+    <p class="lead">생성한 모델 후보가 모두 저장됩니다. <b>확정</b>을 누르면 바로 스타일링 기준 모델로 설정됩니다.</p>
+    <div class="ggrid" id="galM" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<!-- ══════ TAB 3: 스타일링 갤러리 ══════ -->
+<section class="panel" id="p3">
+  <div class="card glass">
+    <div class="card-h"><h2>스타일링 갤러리</h2><button class="btn sm danger r" onclick="clearGallery('style')">전체 삭제</button></div>
+    <p class="lead">스타일링 결과가 모두 저장됩니다. 이 브라우저에 보관되므로 필요한 컷은 다운로드해두세요.</p>
+    <div class="ggrid" id="galS" style="margin-top:16px"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- lightbox -->
+<div class="lb" id="lb">
+  <img id="lbImg" src="" alt="">
+  <button class="lbx lb-close" onclick="closeLB()" title="닫기"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="lbx lb-prev" id="lbPrev" onclick="stepLB(-1)" title="이전"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="lbx lb-next" id="lbNext" onclick="stepLB(1)" title="다음"><svg class="i" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  <div class="lb-bar glass" id="lbBar"><span id="lbCap"></span><em id="lbIdx"></em><button class="btn sm blue" id="lbDl"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>저장</button></div>
+</div>
+
+<script>
+/* ═════════════ CONFIG ═════════════ */
+var OAI_IMG='gpt-image-2', OAI_TXT='gpt-4o-mini';
+function $(id){return document.getElementById(id);}
+function load(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function unstore(k){try{localStorage.removeItem(k);}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+var cfg=Object.assign({oai:'',bg:'musinsa',canvas:'56',logo:true},load('mlbsg_cfg')||{});
+var FACE=load('mlbsg_face');
+var MODEL=load('mlbsg_model');
+var MFACE=load('mlbsg_mface');
+var S=Object.assign({gender:'female',preset:'f1',vibe:'chic',pose:'stand_front',base:'basic',qual:'medium',n:2,faceOn:true},load('mlbsg2_t0')||{});
+var T=Object.assign({hw:'ref',eye:'ref',bag:'ref',lay:[],mat:[],vibe:'keep',pose:'keep',team:'',mlbPos:'cap',fid:'similar',qual:'medium',n:1},load('mlbsg2_t1')||{});
+function saveCfg(){store('mlbsg_cfg',cfg);}
+function saveS(){store('mlbsg2_t0',S);}
+function saveT(){store('mlbsg2_t1',T);}
+function setCfg(k,v){cfg[k]=v;saveCfg();}
+
+/* icons */
+var IC={
+  zoom:'<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M11 8.5v5M8.5 11h5"/></svg>',
+  dl:'<svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>',
+  check:'<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  lock:'<svg class="i" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/></svg>',
+  trash:'<svg class="i" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>',
+  reuse:'<svg class="i" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0113-5.1L19.5 9M19.5 4.5V9H15M19.5 12a7.5 7.5 0 01-13 5.1L4.5 15M4.5 19.5V15H9"/></svg>',
+  person:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c.8-4 3.6-6 7-6s6.2 2 7 6"/></svg>',
+  hanger:'<svg class="i" viewBox="0 0 24 24"><path d="M12 7.5a2 2 0 112-2M12 7.5v1.5L3.5 15a1.5 1.5 0 00.9 2.7h15.2a1.5 1.5 0 00.9-2.7L12 9"/></svg>'
+};
+
+/* ═════════════ STYLE BIBLE ═════════════ */
+var FRAME='FRAMING (fixed for every image): vertical full-body e-commerce lookbook photo. Camera at mid-torso height, 70mm lens equivalent, straight-on, no wide-angle distortion, no tilt. The entire figure from the top of the head/headwear to the soles of the shoes is visible and horizontally centered; the model fills about 82% of the frame height with equal small margins above the head and below the feet. Sharp focus head to toe, true-to-life colors, neutral white balance.';
+var BG={
+  musinsa:'seamless pale cool grey-blue studio cyclorama (about #E6ECF0 softly brightening toward #F3F6F8), no visible floor line or horizon, soft large diffused frontal key light with gentle fill, only a very faint soft contact shadow under the feet',
+  white:'seamless pure white (#FFFFFF) studio cyclorama, no visible floor line, soft even diffused lighting, only a very faint contact shadow under the feet',
+  warm:'seamless warm light grey (about #ECEAE6) studio cyclorama, no visible floor line, soft diffused frontal lighting, only a very faint contact shadow under the feet'
+};
+var QUALITY='QUALITY: ultra-detailed photorealistic high-end fashion photography. GARMENT FINISH (mandatory): every garment looks brand-new, freshly steamed and pressed — NO wrinkles, creases, crumpling, puckering, fold lines or rumpled fabric anywhere; smooth clean fabric surfaces, crisp collars, cuffs, hems, seams and plackets, sleeves and trouser legs falling in clean straight lines with only soft structural drape from the body. PREMIUM MATERIALS: luxury-grade dense fine fabrics with refined finish — smooth taut nylon with subtle sheen, plump evenly filled down quilting with crisp stitch lines, fine-gauge knit with even regular stitches, dense brushed fleece and sweat cotton with soft clean pile, rich suede nap, supple leather with fine grain, clean washed denim; precise construction and premium trims. Correct layering depth with clearly visible hem, cuff, collar and waistband edges. Natural hands with five fingers, anatomically correct proportions.';
+var NEG='AVOID: wrinkled, creased, crumpled, rumpled, cheap-looking or pilled fabric; any text overlay, caption, watermark, store logo or UI badge in the image; holes, rips or distressing unless listed; extra limbs; cropped head or feet; motion blur; props or background objects not listed.';
+var LOGO_POLICY='BRANDING: the ONLY brand marks allowed in the image are MLB (including MLB team logos), Discovery Expedition, Sergio Tacchini and Duvetica — if one of these appears in the reference or product images, reproduce it exactly. Remove EVERY other brand\'s logo, wordmark, emblem, monogram, signature stripe/pattern or label (e.g. three-stripe and trefoil marks, swoosh, outdoor-brand bird marks, jumpman, store names, any other fashion or sportswear label) and leave that area plain in the surrounding garment color and material. Decorative non-brand graphics, prints and slogans may be kept.';
+function prio(ex){return 'TOP PRIORITY USER INSTRUCTION (highest priority — overrides any conflicting instruction below): '+ex+'.';}
+function prioEnd(ex){return 'REMINDER — the TOP PRIORITY USER INSTRUCTION must be followed exactly: '+ex+'.';}
+var POSE_PRO='Professional e-commerce lookbook posing: intentional yet relaxed, shoulders down and open, long neck, elongated leg line, feet placed deliberately on the floor, hands relaxed with soft natural fingers, garments falling naturally so the layering stays readable. No stiff, awkward or mannequin-like limbs.';
+
+/* ═════════════ MODEL OPTIONS ═════════════ */
+var GENDER=[['female','여성'],['male','남성']];
+var BODY={
+  female:'A Korean female fashion model in her early 20s, 170cm tall, slim long-legged build.',
+  male:'A Korean male K-pop idol-style fashion model in his early 20s, 186cm tall. BODY: shoulders about 10% broader than a typical slim fashion model — wide, squared, straight shoulder line with clearly defined deltoids and collarbones (shoulder width roughly 2.6 head widths), a clean V-taper from broad shoulders to a narrow waist and slim hips, lean athletic chest and arms (toned, not bulky), very long legs, upright confident posture with shoulders open and down. The broad shoulder frame must read clearly through every garment.'
+};
+var IDOL_MALE='K-POP IDOL VISUAL: strikingly handsome, charismatic male idol look as seen in a K-pop group\'s fashion-magazine concept photos — flawless clear luminous skin with natural texture, sharp sculpted jawline and high nose bridge, intense yet soft captivating eyes, neat defined brows, subtle idol grooming (light tinted lip balm, barely-there skin makeup, no heavy makeup), effortlessly cool and confident aura, stylish star presence. Original fictional person, not resembling any real celebrity.';
+var MODEL_COMMON_F='Body proportions identical in every image: about 9 heads tall, small head, long legs, slim natural build. Realistic skin texture with natural makeup, not plastic or over-retouched.';
+var MODEL_COMMON_M='Body proportions identical in every image: about 9 heads tall, small head, broad squared shoulders (about 10% wider than a typical slim model), V-taper, long legs. Realistic skin texture, not plastic or over-retouched.';
+var PRESETS={
+  female:[
+    {g:'롱'},
+    {v:'f1',l:'블랙 시스루뱅',face:'Face: small oval face, porcelain fair skin, large doll-like eyes with subtle aegyo-sal, soft straight brows, small straight nose, plump lips in muted rose. Hair: long straight jet-black hair with blunt see-through bangs.'},
+    {v:'f2',l:'브라운 웨이브',face:'Face: small oval face, warm fair skin, soft almond eyes, natural brows, gentle rosy lips. Hair: long voluminous chestnut-brown wavy hair with a center part and face-framing layers.'},
+    {v:'f6',l:'레이어드 허쉬컷',face:'Face: small heart-shaped face, bright fair skin, soft downturned eyes, natural straight brows, glossy coral lips. Hair: long layered hush cut in soft dark brown, airy face-framing layers, wispy curtain bangs, light C-curl ends.'},
+    {v:'f7',l:'히피펌',face:'Face: small oval face, warm neutral skin, clear bright eyes, natural brows, soft nude lips. Hair: long voluminous dark-brown hippie perm with small tight S-waves from the roots, center part, big airy silhouette.'},
+    {v:'f8',l:'슬릭 센터파트',face:'Face: small sharp V-line face, cool porcelain skin, elegant almond eyes, defined brows, muted MLBB lips. Hair: sleek glossy straight long black hair, clean center part, tucked behind the ears.'},
+    {g:'미디엄 · 단발'},
+    {v:'f9',l:'C컬 단발 레이어드',face:'Face: small round face, fair rosy skin, large bright eyes, soft brows, peach lips. Hair: shoulder-length dark-brown layered bob with inward C-curl ends and see-through bangs.'},
+    {v:'f10',l:'울프컷',face:'Face: small face with sharp feline eyes, fair skin, straight brows, matte rose lips, edgy look. Hair: medium shaggy wolf cut in ash-black, choppy short layers on top, longer wispy layers at the nape, tousled texture and curtain fringe.'},
+    {v:'f5',l:'스포티 단발',face:'Face: small face, healthy light-tan skin, clear bright eyes, clean minimal makeup. Hair: chin-length dark-brown bob tucked behind the ears.'},
+    {g:'업스타일 · 브레이드'},
+    {v:'f4',l:'블랙 업두',face:'Face: small face with sharp feline eyes, cool-toned fair skin, defined brows, muted berry lips. Hair: jet-black hair in a messy low bun with wispy blunt bangs.'},
+    {v:'f11',l:'하이 포니테일',face:'Face: small face with a clean forehead, healthy glowing skin, bright almond eyes, natural brows, fresh coral lips. Hair: sleek high ponytail in dark brown, smooth crown, a few loose baby hairs at the temples, face fully exposed.'},
+    {v:'f12',l:'하프업 웨이브',face:'Face: small oval face, soft fair skin, gentle eyes with subtle aegyo-sal, soft brows, rosy lips. Hair: long soft light-brown waves styled half-up half-down, the top section gathered with a small claw clip at the back.'},
+    {v:'f3',l:'애쉬블론드 브레이드',face:'Face: small V-line face, light fair skin with a few faint freckles, soft eyes, peach lips. Hair: ash-blonde hair in one thick loose braid over the shoulder with wispy face-framing strands.'}
+  ],
+  male:[
+    {g:'숏'},
+    {v:'m1',l:'클린 숏컷',face:'Face: small face, clear fair skin, soft double eyelids, straight brows, defined jawline. Hair: short natural black hair with a light fringe.'},
+    {v:'m7',l:'댄디컷',face:'Face: small soft face, clear fair skin, gentle double-lidded eyes, straight brows, clean jawline. Hair: classic Korean dandy cut in glossy black, soft straight fringe covering the forehead to the brows, neat rounded sides over the ears.'},
+    {v:'m6',l:'버즈컷',face:'Face: small sharp face with strong straight brows, clear light-tan skin, deep-set monolid eyes, sharp jawline and cheekbones. Hair: very short black buzz cut with a clean natural hairline.'},
+    {g:'펌 · 텍스처'},
+    {v:'m4',l:'내추럴 볼륨펌',face:'Face: small face, clear fair skin, calm almond-shaped eyes, straight brows, defined jawline. Hair: medium-short jet-black hair with a soft natural wave perm (Korean shadow-perm texture), airy volume on top, tousled fringe falling to just above the brows and loosely parted off-center, sides kept full over the tops of the ears with no fade or undercut, slightly undone matte finish.'},
+    {v:'m5',l:'가르마펌',face:'Face: small face with a clean forehead, fair skin, sharp double-lidded eyes, defined brows and jawline. Hair: black side-part perm (Korean gareuma perm), 6:4 part, soft S-waves swept up and back on one side exposing part of the forehead, tidy full sides.'},
+    {v:'m8',l:'애즈펌',face:'Face: small soft face, fair skin, gentle eyes, straight brows, smooth jawline. Hair: dark-brown Korean as-perm, loose C-curl curtain fringe parted near the center and framing the face, soft volume on top, sides tucked neatly.'},
+    {v:'m2',l:'텍스처 펌',face:'Face: small sharp face, fair skin, cool monolid eyes, sharp jawline, small silver ear cuff. Hair: messy textured black hair with a spiky fringe.'},
+    {g:'미디엄'},
+    {v:'m9',l:'울프컷',face:'Face: small sharp face, cool fair skin, narrow intense eyes, straight brows, sharp jawline, small silver hoop earring. Hair: medium shaggy wolf cut in black, choppy layers on top, longer wispy layers reaching the nape, tousled curtain fringe.'},
+    {v:'m10',l:'센터파트 미디엄',face:'Face: small oval face, clear fair skin, calm double-lidded eyes, soft brows, clean jawline. Hair: chin-length straight dark-brown hair with a clean center part, the front tucked behind the ears.'},
+    {v:'m3',l:'애슬레틱 러너',face:'Face: small face, slightly tanned healthy skin, clear eyes, clean jawline. Hair: short tidy dark-brown hair. Lean athletic runner physique.'}
+  ]
+};
+function presetList(g){return PRESETS[g].filter(function(p){return p.v;});}
+function curPreset(){return presetList(S.gender).filter(function(x){return x.v===S.preset;})[0]||presetList(S.gender)[0];}
+var VIBE_O=[['chic','시크 무표정'],['hip','힙'],['pure','청순'],['cute','귀여움'],['fresh','청량'],['focus','집중 (러닝)']];
+var VIBE={
+  chic:'neutral calm expression, relaxed closed lips, direct confident gaze into the camera, cool editorial attitude',
+  hip:'slightly nonchalant expression, head tilted a little, street-cool attitude',
+  pure:'soft gentle expression, clear innocent eyes, faint natural smile',
+  cute:'bright playful expression, slight pout or small smile, lively eyes',
+  fresh:'fresh energetic expression, healthy dewy glow, subtle smile',
+  focus:'focused athletic expression, eyes looking ahead in the direction of movement'
+};
+var BASE_O=[['basic','흰 티 + 블랙 팬츠'],['sweat','그레이 스웨트 셋업'],['run','블랙 러닝 베이스']];
+var BASE_OUT={
+  basic:'fitted plain white crew-neck short-sleeve cotton t-shirt, straight-leg plain black trousers, plain white low-top sneakers',
+  sweat:'plain heather-grey crew-neck sweatshirt with matching straight-leg sweatpants, plain white low-top sneakers',
+  run:'plain black fitted short-sleeve technical tee, plain black running shorts, plain black running shoes'
+};
+var BASE_GENERIC='plain base fitting outfit (plain tee or sweatshirt, plain trousers/shorts, plain sneakers)';
+
+/* ═════════════ POSES ═════════════ */
+var POSE_O=[
+  {g:'기본 스탠딩'},
+  ['stand_front','정면 스탠딩'],['contrapposto','콘트라포스토'],['cross_leg','발 교차 스탠딩'],['wide_stance','와이드 스탠스'],['lean_back','상체 젖힌 시크'],['look_away','정면 바디·측면 시선'],
+  {g:'핸즈 · 디테일 터치'},
+  ['pockets','양손 주머니'],['one_pocket','한손 주머니'],['arms_crossed','팔짱'],['hand_hip','한손 허리+스트랩'],['cap_touch','모자 챙 터치'],['hair_touch','머리 넘기기'],
+  ['strap_hold','베스트·스트랩 잡기'],['zip_pull','지퍼·밑단 잡기'],['collar_touch','칼라·후드끈 터치'],['sleeve_pull','소매 끝 당기기'],
+  {g:'가방 연출'},
+  ['bag_hold','가방 아래로 들기'],['bag_front','가방 앞으로 내밀어 들기'],['bag_shoulder','숄더백 스트랩 잡기'],['backpack_hold','백팩 한손 들기'],
+  {g:'앵글'},
+  ['three_quarter','3/4 턴'],['side','사이드 프로필'],['back','백뷰'],['over_shoulder','뒤돌아 어깨너머 시선'],
+  {g:'모션 · 러닝'},
+  ['step_forward','걸어나오는 스텝'],['walk_front','정면 워킹'],['walk','사이드 파워워킹'],['run_side','러닝 사이드 스트라이드'],['run_strap','러닝+백팩 스트랩'],['run_34','러닝 3/4'],['stretch','러닝 전 스트레칭']
+];
+var POSE={
+  stand_front:'standing straight facing the camera, feet hip-width apart, weight slightly on one leg, arms relaxed by the sides, chin level, calm gaze into the lens',
+  contrapposto:'standing facing the camera in a contrapposto stance: weight on the back leg, front knee softly bent and turned slightly inward, hips tilted, one hand loosely at the thigh, the other relaxed',
+  cross_leg:'standing facing the camera with legs crossed at the ankles, toes pointing slightly outward, hands relaxed, head tilted slightly, effortless editorial stance',
+  wide_stance:'standing square to the camera with feet planted wider than the shoulders, toes slightly out, arms relaxed or hands in jacket pockets, strong grounded street-style attitude',
+  lean_back:'standing facing the camera with the upper body leaning slightly back, both hands deep in the trouser or jacket pockets, chin slightly raised, cool detached gaze looking down into the lens',
+  look_away:'body facing the camera with weight on one leg, head turned three-quarters to the side looking off-camera, arms relaxed, candid editorial feel',
+  pockets:'standing facing the camera with both hands casually in the front pockets, relaxed shoulders, feet hip-width apart, one knee slightly bent',
+  one_pocket:'standing facing the camera with one hand in a pocket and the other arm relaxed by the side, slight hip shift, head tilted a touch',
+  arms_crossed:'standing with arms loosely crossed over the chest, weight on one leg, head turned slightly to one side looking off-camera, aloof cool mood',
+  hand_hip:'standing with one hand resting on the hip and the other hand holding the shoulder-bag strap near the shoulder, slight contrapposto, head turned slightly away from the camera',
+  cap_touch:'standing with one hand raised lightly holding the brim of the headwear, the other arm relaxed, one foot stepping slightly forward across the other, body angled a little',
+  hair_touch:'standing facing the camera with one hand running through the hair on top of the head, elbow raised, the other hand in a pocket, relaxed shoulders',
+  strap_hold:'standing facing the camera with one hand holding the vest cord or bag strap at the chest, the other hand resting at the waist, one leg straight and the other slightly bent forward',
+  zip_pull:'standing facing the camera with feet apart, one hand pulling the front zipper of the outer layer and the other hand tugging the hem of the top, showing the layering',
+  collar_touch:'standing facing the camera with one hand adjusting the collar or holding the hood drawstring, the other arm relaxed, chin slightly lowered',
+  sleeve_pull:'standing facing the camera with one hand gently pulling the cuff of the opposite sleeve, elbows close to the body, weight on one leg',
+  bag_hold:'standing facing the camera holding the bag low at the side by its handles with one straight arm, the other arm relaxed, feet close together',
+  bag_front:'standing facing the camera holding the tote bag slightly forward at hip height in one hand, the other hand in a pocket, feet apart, slight lean toward the bag side',
+  bag_shoulder:'standing with the shoulder bag on one shoulder, that hand holding its strap, the other hand relaxed or in a pocket, body angled slightly, looking off-camera',
+  backpack_hold:'standing facing the camera holding the backpack by its top handle down at the side with one hand, the other hand in a pocket, head slightly tilted',
+  three_quarter:'body turned 3/4 toward the camera, head turned back to the camera, weight on the back leg, front foot pointed toward the lens',
+  side:'standing in a clean full side profile, posture upright, arms relaxed, showing the silhouette and layering from the side',
+  back:'standing with the back fully to the camera, feet hip-width apart, arms relaxed, showing the back of the outfit',
+  over_shoulder:'standing mostly back to the camera, torso twisted slightly, head turned to look over the shoulder toward the lens',
+  step_forward:'walking toward the camera mid-step: one foot stepping forward across the center line, rear heel lifted, arms swinging softly, natural runway walk',
+  walk_front:'walking straight toward the camera mid-stride, front heel touching down, arms swinging naturally, gaze straight ahead',
+  walk:'brisk power-walking mid-step in side profile toward the left of the frame, heel striking, arms swinging naturally',
+  run_side:'running mid-stride in full side profile moving toward the left of the frame: rear foot pushing off the ground, front knee lifted, both arms bent about 90 degrees swinging opposite to the legs, torso leaning slightly forward, both shoes fully visible inside the frame',
+  run_strap:'running mid-stride toward the left of the frame in side profile, one hand gripping the backpack shoulder strap at the chest, the other arm bent and swinging, rear foot off the ground, both shoes fully visible',
+  run_34:'jogging mid-stride toward the camera at a 3/4 angle, one foot off the ground, arms bent and swinging, natural running form, both shoes fully visible',
+  stretch:'pre-run warm-up: standing on one leg holding the other foot behind for a quad stretch, free arm extended slightly for balance, body facing the camera at 3/4'
+};
+
+/* ═════════════ STYLING OPTIONS ═════════════ */
+var HW_O=[['ref','레퍼런스 그대로'],['none','없음'],['ballcap','볼캡'],['washed','워시드 볼캡'],['beanie','자카드 비니'],['bandana','반다나'],['bandana_cap','반다나+볼캡'],['runcap','러닝캡'],['ruffle','러플·뉴스보이 캡']];
+var HW={
+  none:'no headwear, hair fully visible',
+  ballcap:'structured six-panel baseball cap with a curved brim, worn straight and slightly low',
+  washed:'washed vintage-faded six-panel ball cap with embroidered front graphic, soft unstructured crown, curved brim',
+  beanie:'fitted jacquard-knit beanie with a woven graphic pattern, pulled down to just above the eyebrows',
+  bandana:'printed paisley bandana tied over the head as a kerchief, covering the crown, knotted at the nape with the tails hanging',
+  bandana_cap:'printed bandana tied over the head and knotted at the nape, with a baseball cap worn on top of the bandana',
+  runcap:'lightweight perforated running cap worn low, slightly curved brim',
+  ruffle:'soft slouchy gathered newsboy-style cap pulled low over the forehead'
+};
+var EYE_O=[['ref','레퍼런스 그대로'],['none','없음'],['shield','스포츠 쉴드 선글라스 착용'],['onbrim','고글 캡 챙 위에 올림'],['onhead','선글라스 머리 위'],['oval','슬림 오벌 선글라스']];
+var EYE={
+  none:'no eyewear',
+  shield:'wraparound sport-shield running sunglasses with mirrored lens, worn on the eyes',
+  onbrim:'wraparound sport-shield sunglasses resting on top of the cap brim, not on the eyes',
+  onhead:'sunglasses pushed up and resting on top of the head',
+  oval:'slim oval tinted sunglasses worn on the eyes'
+};
+var BAG_O=[['ref','레퍼런스 그대로'],['none','없음'],['shoulder','레더 숄더백'],['tote','캔버스 토트'],['backpack','백팩'],['cross','크로스바디 슬링'],['waist','러닝 웨이스트팩']];
+var BAG={
+  none:'no bag',
+  shoulder:'slouchy leather shoulder bag with metal hardware worn on one shoulder',
+  tote:'large canvas tote bag held in one hand at the side',
+  backpack:'backpack worn on both shoulders',
+  cross:'nylon crossbody sling bag worn diagonally across the chest',
+  waist:'slim running waist belt pack worn at the hips'
+};
+var LAY_O=[['skirt_pants','스커트 over 와이드팬츠'],['tied_waist','허리에 묶은 니트·스웨트'],['shirt_hem','셔츠 밑단 레이어드'],['long_short','롱슬리브+반팔/민소매'],['inner_peek','컬러트림 이너 노출'],['boxer_band','박서 웨이스트밴드 노출'],['run_vest','러닝 하이드레이션 베스트'],['belt_double','더블 벨트'],['compression','2-in-1 컴프레션 쇼츠'],['socks','크루삭스 노출']];
+var LAY={
+  skirt_pants:'a short knit or lace-hem mini skirt layered OVER wide-leg pants, skirt hem at mid-thigh',
+  tied_waist:'a knit sweater or sweatshirt tied around the waist by its sleeves, knot at the front hip, body of the garment hanging over the bottoms',
+  shirt_hem:'a plaid or contrast shirt worn open under the outer layer, its hem and cuffs extending 5-8cm below the jacket hem and sleeves',
+  long_short:'a long-sleeve base layer under a short-sleeve tee or sleeveless jersey, contrasting sleeve color clearly visible',
+  inner_peek:'a contrast-trim tank or henley inner visible at the neckline and hem under the top',
+  boxer_band:'a patterned boxer waistband peeking about 3cm above the trouser waistband',
+  run_vest:'a fitted trail-running hydration vest with front bottle pockets and bungee cords worn over the top',
+  belt_double:'a double-buckle eyelet belt worn low on the hips over the top layer',
+  compression:'2-in-1 running shorts with a longer black compression liner visible beneath the outer shorts',
+  socks:'crew socks pulled up and clearly visible above the shoes'
+};
+var MAT_O=[['nylon','나일론·윈드브레이커'],['down','경량 다운 퀼팅'],['suede','스웨이드·시어링'],['sweat','스웨트 플리스'],['knit','니트 텍스처'],['denim','데님 워싱'],['tech','테크 저지·스판'],['leather','레더 광택']];
+var MAT={
+  nylon:'outer in smooth, taut premium nylon/ripstop with a subtle refined sheen and clean surface',
+  down:'lightweight quilted down with horizontal baffles, puffy volume and soft sheen',
+  suede:'brushed faux suede with shearling/fleece trims and visible nap',
+  sweat:'dense premium heather cotton fleece with soft brushed texture and a clean smooth surface',
+  knit:'clearly visible knit texture: rib, cable or pointelle stitches',
+  denim:'washed denim with whiskering, fading and visible twill',
+  tech:'smooth stretch technical jersey with matte finish and clean bonded seams',
+  leather:'soft leather with natural grain and gentle gloss on bags and trims'
+};
+var TEAM_O=[['','없음'],['NY','NY 양키스'],['LA','LA 다저스'],['BOS','BOS 레드삭스'],['CHI','CHI 화이트삭스'],['NYM','NY 메츠'],['SF','SF 자이언츠'],['TEX','TEX 레인저스'],['SEA','SEA 매리너스'],['OAK','OAK 애슬레틱스']];
+var TEAM={NY:'New York Yankees interlocking "NY"',LA:'Los Angeles Dodgers "LA"',BOS:'Boston Red Sox "B"',CHI:'Chicago White Sox "Sox"',NYM:'New York Mets "NY"',SF:'San Francisco Giants "SF"',TEX:'Texas Rangers "T"',SEA:'Seattle Mariners "S"',OAK:'Oakland Athletics "A\'s"'};
+var MLBPOS_O=[['cap','모자 정면'],['chest','상의 가슴'],['both','모자+가슴']];
+var FID={similar:'reproduce every item faithfully: same type, color, material, prints, proportions, placement and layering',remix:'keep the same item types, palette and layering but refresh minor details',inspired:'loosely inspired by the items\' palette and layering, creative reinterpretation'};
+
+var LAYERS=[
+  {k:'headwear',l:'헤드웨어',e:'Headwear',i:'🧢',s:'캡·비니·반다나'},
+  {k:'eyewear',l:'아이웨어',e:'Eyewear',i:'🕶',s:'선글라스·고글'},
+  {k:'outer',l:'아우터',e:'Outerwear (outermost layer)',i:'🧥',s:'재킷·패딩·코트'},
+  {k:'vest',l:'베스트',e:'Vest worn over the top',i:'🦺',s:'조끼·러닝베스트'},
+  {k:'mid',l:'상의',e:'Main top',i:'👕',s:'티·스웨트·니트'},
+  {k:'inner',l:'이너',e:'Inner layer visible under the top',i:'🎽',s:'이너·셔츠'},
+  {k:'waist_layer',l:'허리 레이어',e:'Waist layer worn over the bottoms',i:'🎀',s:'스커트·묶은 니트'},
+  {k:'bottom',l:'하의',e:'Bottoms',i:'👖',s:'팬츠·쇼츠'},
+  {k:'legwear',l:'레그웨어',e:'Socks / legwear',i:'🧦',s:'양말·레그워머'},
+  {k:'shoes',l:'신발',e:'Shoes',i:'👟',s:'스니커즈·부츠'},
+  {k:'bag',l:'가방',e:'Bag',i:'👜',s:'숄더·토트·백팩'},
+  {k:'accessories',l:'액세서리',e:'Accessories',i:'⌚',s:'시계·목걸이·벨트'}
+];
+var SLOT_KEYS=['headwear','eyewear','outer','vest','mid','inner','waist_layer','bottom','shoes','bag'];
+function L(k){for(var i=0;i<LAYERS.length;i++)if(LAYERS[i].k===k)return LAYERS[i];}
+function lab(opts,v){for(var i=0;i<opts.length;i++)if(opts[i][0]===v)return opts[i][1];return '';}
+
+/* ═════════════ STATE ═════════════ */
+var bR=null,mR='image/jpeg';
+var ANA=null,LAYTXT={},LAYON={};
+var gar={},garM={},garD={};
+var RS={};              // id → {id,kind,b64,mime,ts,label,url}
+var GAL=[];             // gallery items, newest first
+
+(function sanitize(){
+  function ok(opts,v){return opts.some(function(o){return o[0]===v;});}
+  if(!ok(GENDER,S.gender))S.gender='female';
+  if(!presetList(S.gender).some(function(p){return p.v===S.preset;}))S.preset=presetList(S.gender)[0].v;
+  if(!VIBE[S.vibe])S.vibe='chic';
+  if(!POSE[S.pose])S.pose='stand_front';
+  if(!BASE_OUT[S.base])S.base='basic';
+  if([1,2,4].indexOf(S.n)<0)S.n=2;
+  if(!ok(HW_O,T.hw))T.hw='ref';
+  if(!ok(EYE_O,T.eye))T.eye='ref';
+  if(!ok(BAG_O,T.bag))T.bag='ref';
+  if(T.vibe!=='keep'&&!VIBE[T.vibe])T.vibe='keep';
+  if(T.pose!=='keep'&&!POSE[T.pose])T.pose='keep';
+  if(!ok(TEAM_O,T.team))T.team='';
+  T.lay=(T.lay||[]).filter(function(v){return LAY[v];});
+  T.mat=(T.mat||[]).filter(function(v){return MAT[v];});
+  if([1,2].indexOf(T.n)<0)T.n=1;
+})();
+
+/* ═════════════ UI BUILDERS ═════════════ */
+function chips(id,opts,obj,key,multi,onchg){
+  var el=$(id),save=obj===S?saveS:saveT;
+  function render(){
+    el.innerHTML=opts.map(function(o){
+      if(o.g)return '<div class="cgl">'+o.g+'</div>';
+      var on=multi?obj[key].indexOf(o[0])>=0:obj[key]===o[0];
+      return '<div class="chip'+(on?' on':'')+'" data-v="'+esc(o[0])+'">'+o[1]+'</div>';
+    }).join('');
+  }
+  el.onclick=function(e){
+    var c=e.target.closest('.chip');if(!c)return;var v=c.dataset.v;
+    if(multi){var a=obj[key],k=a.indexOf(v);if(k>=0)a.splice(k,1);else a.push(v);}else obj[key]=v;
+    render();save();if(onchg)onchg(v);
+  };
+  render();
+}
+function nBtns(id,obj){
+  var nb=$(id),save=obj===S?saveS:saveT;
+  function rn(){nb.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',+b.dataset.n===obj.n);});}
+  nb.onclick=function(e){var b=e.target.closest('button');if(!b)return;obj.n=+b.dataset.n;save();rn();};rn();
+}
+function buildPreset(){chips('presetG',PRESETS[S.gender].map(function(p){return p.g?{g:p.g}:[p.v,p.l];}),S,'preset');}
+function initUI(){
+  chips('genderG',GENDER,S,'gender',false,function(){S.preset=presetList(S.gender)[0].v;saveS();buildPreset();});
+  buildPreset();
+  chips('vibeG',VIBE_O,S,'vibe');
+  chips('poseG',POSE_O,S,'pose');
+  chips('baseG',BASE_O,S,'base');
+  $('t0qual').value=S.qual;nBtns('nG0',S);
+  $('faceOn').checked=!!S.faceOn;$('faceOn').onchange=function(){S.faceOn=this.checked;saveS();};
+  $('slotGrid').innerHTML=SLOT_KEYS.map(function(k){var g=L(k);
+    return '<div class="slot" id="sl-'+k+'"><input type="file" accept="image/*" onchange="setGarment(\''+k+'\',this)">'+
+      '<button class="clr" onclick="clrGarment(event,\''+k+'\')">✕</button><img class="sprev" id="sp-'+k+'" src="" alt="">'+
+      '<span class="si">'+g.i+'</span><span class="sl">'+g.l+'</span><span class="ss">'+g.s+'</span></div>';
+  }).join('');
+  chips('hwG',HW_O,T,'hw');
+  chips('eyeG',EYE_O,T,'eye');
+  chips('bagG',BAG_O,T,'bag');
+  chips('layG',LAY_O,T,'lay',true);
+  chips('matG',MAT_O,T,'mat',true);
+  chips('t1vibeG',[['keep','모델 표정 유지']].concat(VIBE_O),T,'vibe');
+  chips('t1poseG',[{g:'유지'},['keep','모델 포즈 유지']].concat(POSE_O),T,'pose');
+  chips('teamG',TEAM_O,T,'team');
+  chips('mlbPosG',MLBPOS_O,T,'mlbPos');
+  $('t1fid').value=T.fid;$('t1q').value=T.qual;nBtns('nG1',T);
+  $('cfgBg').value=cfg.bg;$('cfgCanvas').value=cfg.canvas;$('cfgLogo').value=cfg.logo?'1':'0';
+  if(cfg.oai){$('oaiKey').value=cfg.oai;setSt('oaiSt','저장됨',true);}
+  if(!cfg.oai)$('setp').classList.add('on');
+  renderFace();renderModel();renderLayers();renderGalleries();
+}
+
+/* ═════════════ SETTINGS ═════════════ */
+function togSet(){$('setp').classList.toggle('on');}
+function openSet(){$('setp').classList.add('on');window.scrollTo({top:0,behavior:'smooth'});}
+function setSt(id,txt,ok){var el=$(id);el.textContent=txt;el.className='st'+(ok?' ok':'');}
+function saveOai(){var v=$('oaiKey').value.trim();if(v.indexOf('sk-')===0){cfg.oai=v;saveCfg();setSt('oaiSt','저장됨',true);if(bR&&!ANA)analyzeRef(false);}else setSt('oaiSt','sk-로 시작해야 합니다',false);}
+$('oaiKey').addEventListener('keydown',function(e){if(e.key==='Enter')saveOai();});
+
+/* ═════════════ IMAGE UTILS ═════════════ */
+function downscale(src,max,q,cb){
+  var im=new Image();
+  im.onload=function(){
+    var s=Math.min(1,max/Math.max(im.width,im.height));
+    var c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);
+    var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);
+    cb(c.toDataURL('image/jpeg',q));
+  };
+  im.onerror=function(){cb(src);};
+  im.src=src;
+}
+function readImage(file,max,cb){
+  var r=new FileReader();
+  r.onload=function(e){
+    var src=e.target.result,im=new Image();
+    im.onload=function(){
+      if(Math.max(im.width,im.height)<=max&&file.size<4e6&&/png|jpe?g|webp/.test(file.type)){cb(src.split(',')[1],file.type,src);return;}
+      downscale(src,max,0.92,function(u){cb(u.split(',')[1],'image/jpeg',u);});
+    };
+    im.onerror=function(){cb(src.split(',')[1],file.type||'image/jpeg',src);};
+    im.src=src;
+  };
+  r.readAsDataURL(file);
+}
+function cropFace(b64,mime){
+  return new Promise(function(res){
+    var im=new Image();
+    im.onload=function(){
+      var w=im.naturalWidth,h=im.naturalHeight,sz=Math.round(Math.min(h*0.24,w*0.6));
+      var x=Math.max(0,Math.round(w/2-sz/2)),y=Math.round(h*0.03);
+      var c=document.createElement('canvas');c.width=512;c.height=512;
+      c.getContext('2d').drawImage(im,x,y,sz,sz,0,0,512,512);
+      res({b64:c.toDataURL('image/jpeg',0.92).split(',')[1],mime:'image/jpeg'});
+    };
+    im.onerror=function(){res(null);};
+    im.src='data:'+mime+';base64,'+b64;
+  });
+}
+function finalize(o){
+  if(cfg.canvas!=='56')return Promise.resolve(o);
+  return new Promise(function(res){
+    var im=new Image();
+    im.onload=function(){
+      var w=im.naturalWidth,h=im.naturalHeight;
+      if(w/h>=5/6-0.002){res(o);return;}
+      var W=Math.round(h*5/6),x=Math.round((W-w)/2);
+      var c=document.createElement('canvas');c.width=W;c.height=h;var g=c.getContext('2d');
+      g.drawImage(im,0,0,2,h,0,0,x+2,h);
+      g.drawImage(im,w-2,0,2,h,x+w-2,0,W-(x+w)+2,h);
+      g.drawImage(im,x,0);
+      res({b64:c.toDataURL('image/png').split(',')[1],mime:'image/png'});
+    };
+    im.onerror=function(){res(o);};
+    im.src='data:'+o.mime+';base64,'+o.b64;
+  });
+}
+function imgBlob(b64,mime){var bs=atob(b64),ia=new Uint8Array(bs.length);for(var i=0;i<bs.length;i++)ia[i]=bs.charCodeAt(i);return new Blob([ia],{type:mime});}
+function extOf(m){return m==='image/png'?'.png':m==='image/webp'?'.webp':'.jpg';}
+function blobToB64(blob){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result.split(',')[1]);};r.onerror=rej;r.readAsDataURL(blob);});}
+
+/* ═════════════ GALLERY STORE (IndexedDB) ═════════════ */
+var DB=null;
+function dbOpen(){
+  return new Promise(function(res){
+    try{
+      var r=indexedDB.open('styling_agent',1);
+      r.onupgradeneeded=function(){r.result.createObjectStore('gallery',{keyPath:'id'});};
+      r.onsuccess=function(){DB=r.result;res(DB);};
+      r.onerror=function(){res(null);};
+    }catch(e){res(null);}
+  });
+}
+function dbTx(mode,fn){
+  return new Promise(function(res){
+    if(!DB){res(null);return;}
+    try{var tx=DB.transaction('gallery',mode),st=tx.objectStore('gallery'),out=fn(st);tx.oncomplete=function(){res(out&&out.result);};tx.onerror=function(){res(null);};}
+    catch(e){res(null);}
+  });
+}
+function dbPut(it){return dbTx('readwrite',function(st){return st.put({id:it.id,kind:it.kind,b64:it.b64,mime:it.mime,ts:it.ts,label:it.label,base:it.base||null});});}
+function dbDel(id){return dbTx('readwrite',function(st){return st.delete(id);});}
+function dbAll(){return dbTx('readonly',function(st){return st.getAll();});}
+function urlOf(it){if(!it.url)it.url=URL.createObjectURL(imgBlob(it.b64,it.mime));return it.url;}
+function addResult(o,kind,label,base){
+  var it={id:kind[0]+Date.now().toString(36)+Math.random().toString(36).slice(2,6),kind:kind,b64:o.b64,mime:o.mime,ts:Date.now(),label:label||'',base:base||null};
+  RS[it.id]=it;GAL.unshift(it);dbPut(it);renderGalleries();return it.id;
+}
+function fmtDate(ts){var d=new Date(ts);function p(n){return (n<10?'0':'')+n;}return (d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function renderGalleries(){
+  var m=GAL.filter(function(x){return x.kind==='model';}),s=GAL.filter(function(x){return x.kind==='style';});
+  $('cntM').textContent=m.length;$('cntS').textContent=s.length;
+  $('galM').innerHTML=m.length?m.map(function(it){return gcard(it,'galM');}).join(''):gempty(IC.person,'아직 생성한 모델이 없습니다.<br>모델 생성 탭에서 후보를 만들어보세요.');
+  $('galS').innerHTML=s.length?s.map(function(it){return gcard(it,'galS');}).join(''):gempty(IC.hanger,'아직 스타일링 결과가 없습니다.<br>모델을 확정하고 착장을 입혀보세요.');
+}
+function gempty(ic,t){return '<div class="gempty" style="grid-column:1/-1"><div class="ic">'+ic+'</div>'+t+'</div>';}
+function gcard(it,scope){
+  var a=it.kind==='model'
+    ?ab('p',IC.check,'확정','confirmModel',it.id)+ab('',IC.lock,'얼굴','lockFace',it.id)
+    :ab('',IC.reuse,'레퍼런스로','useAsRef',it.id);
+  a+=ab('',IC.dl,'','dl',it.id)+ab('d',IC.trash,'','delItem',it.id);
+  return '<div class="gcard" data-rid="'+it.id+'"><div class="gimg"><img src="'+urlOf(it)+'" alt="" loading="lazy" onclick="zoom(\''+it.id+'\',\''+scope+'\')">'+
+    '<button class="zbtn" title="확대" onclick="zoom(\''+it.id+'\',\''+scope+'\')">'+IC.zoom+'</button></div>'+
+    '<div class="gcap"><b>'+esc(it.label||(it.kind==='model'?'모델':'스타일링'))+'</b><span>'+fmtDate(it.ts)+'</span><div class="gact">'+a+'</div></div></div>';
+}
+function delItem(id){
+  if(!confirm('이 이미지를 갤러리에서 삭제할까요?'))return;
+  var it=RS[id];if(it&&it.url)URL.revokeObjectURL(it.url);
+  delete RS[id];GAL=GAL.filter(function(x){return x.id!==id;});dbDel(id);renderGalleries();
+  var c=document.querySelector('.icrd[data-rid="'+id+'"]');if(c)c.remove();
+}
+function clearGallery(kind){
+  var list=GAL.filter(function(x){return x.kind===kind;});if(!list.length)return;
+  if(!confirm((kind==='model'?'모델':'스타일링')+' 갤러리 '+list.length+'장을 모두 삭제할까요?'))return;
+  list.forEach(function(it){if(it.url)URL.revokeObjectURL(it.url);delete RS[it.id];dbDel(it.id);});
+  GAL=GAL.filter(function(x){return x.kind!==kind;});renderGalleries();
+}
+
+/* ═════════════ LIGHTBOX ═════════════ */
+var LB={ids:[],i:0,src:null};
+function zoom(id,scope){
+  var ids=[].slice.call(document.querySelectorAll('#'+scope+' [data-rid]')).map(function(el){return el.dataset.rid;}).filter(function(x){return RS[x];});
+  if(ids.indexOf(id)<0)ids=[id];
+  LB={ids:ids,i:ids.indexOf(id),src:null};showLB();
+}
+function zoomSrc(src,cap){LB={ids:[],i:0,src:src,cap:cap};showLB();}
+function showLB(){
+  var single=!!LB.src,it=single?null:RS[LB.ids[LB.i]];
+  $('lbImg').src=single?LB.src:urlOf(it);
+  $('lbCap').textContent=single?(LB.cap||''):(it.label||'');
+  $('lbIdx').textContent=single||LB.ids.length<2?'':(LB.i+1)+' / '+LB.ids.length;
+  $('lbPrev').style.display=$('lbNext').style.display=(!single&&LB.ids.length>1)?'':'none';
+  $('lbDl').style.display=single?'none':'';
+  $('lbDl').onclick=function(){if(it)dl(it.id);};
+  $('lb').classList.add('on');document.body.style.overflow='hidden';
+}
+function closeLB(){$('lb').classList.remove('on');document.body.style.overflow='';}
+function stepLB(d){if(LB.src||LB.ids.length<2)return;LB.i=(LB.i+d+LB.ids.length)%LB.ids.length;showLB();}
+$('lb').addEventListener('click',function(e){if(e.target===this)closeLB();});
+document.addEventListener('keydown',function(e){
+  if(!$('lb').classList.contains('on'))return;
+  if(e.key==='Escape')closeLB();else if(e.key==='ArrowLeft')stepLB(-1);else if(e.key==='ArrowRight')stepLB(1);
+});
+
+/* ═════════════ FACE / MODEL ═════════════ */
+function renderFace(){
+  var t=$('fthumb');
+  if(FACE&&FACE.b64)t.innerHTML='<img src="data:'+FACE.mime+';base64,'+FACE.b64+'" alt="">';else t.textContent='없음';
+}
+function setFaceFrom(b64,mime,crop){
+  var go=function(o){if(!o)return;FACE=o;store('mlbsg_face',FACE);S.faceOn=true;$('faceOn').checked=true;saveS();renderFace();};
+  if(crop)cropFace(b64,mime).then(go);
+  else downscale('data:'+mime+';base64,'+b64,768,0.9,function(u){go({b64:u.split(',')[1],mime:'image/jpeg'});});
+}
+function clearFace(){FACE=null;unstore('mlbsg_face');renderFace();}
+$('faceIn').addEventListener('change',function(e){var f=e.target.files[0];if(f)readImage(f,1600,function(b,m){setFaceFrom(b,m,false);});this.value='';});
+function lockFace(id){var r=RS[id];if(r){setFaceFrom(r.b64,r.mime,true);goTab(0);}}
+
+function renderModel(){
+  var has=!!(MODEL&&MODEL.b64),t=$('mthumb');
+  if(has){t.innerHTML='<img src="data:'+MODEL.mime+';base64,'+MODEL.b64+'" alt="" onclick="zoomSrc(this.src,\'확정 모델\')">';t.classList.add('ok');}
+  else{t.innerHTML='확정 모델<br>없음';t.classList.remove('ok');}
+  $('mtitle').innerHTML=has?'<span class="okdot"></span>확정 모델로 스타일링':'스타일링';
+  $('mdesc').textContent=has?(MODEL.src==='upload'?'직접 업로드한 모델입니다. 이 인물·체형 그대로 착장만 교체됩니다.':'확정한 모델입니다. 얼굴 크롭이 identity 레퍼런스로 함께 전달되어 여러 번 입혀도 같은 얼굴로 유지됩니다.'):'모델 생성 탭이나 모델 갤러리에서 확정하거나, 모델 사진을 직접 올리세요.';
+  var b=$('gb1');b.disabled=!has;b.textContent=has?'스타일링하기':'확정 모델이 있어야 활성화';
+}
+function setModel(b64,mime,src,base){
+  downscale('data:'+mime+';base64,'+b64,1536,0.92,function(u){
+    MODEL={b64:u.split(',')[1],mime:'image/jpeg',src:src,base:base||null};
+    store('mlbsg_model',MODEL);
+    if(src==='gen'){cropFace(MODEL.b64,MODEL.mime).then(function(f){MFACE=f;if(f)store('mlbsg_mface',f);});}
+    else{MFACE=null;unstore('mlbsg_mface');}
+    renderModel();
+  });
+}
+function confirmModel(id){var r=RS[id];if(!r)return;setModel(r.b64,r.mime,'gen',r.base||null);goTab(1);}
+$('modelIn').addEventListener('change',function(e){var f=e.target.files[0];if(f)readImage(f,1600,function(b,m){setModel(b,m,'upload');});this.value='';});
+
+/* ═════════════ TABS / UPLOADS ═════════════ */
+function goTab(i){
+  document.querySelectorAll('#tabs .tab').forEach(function(t,j){t.classList.toggle('on',j===i);});
+  document.querySelectorAll('.panel').forEach(function(p,j){p.classList.toggle('on',j===i);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setupUpload(zid,fid,pvid,piid,onLoad){
+  var z=$(zid),f=$(fid);
+  function go(file){readImage(file,1600,function(b,m,src){$(piid).src=src;$(pvid).style.display='block';onLoad(b,m);});}
+  z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('drag');});
+  z.addEventListener('dragleave',function(){z.classList.remove('drag');});
+  z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('drag');var fi=e.dataTransfer.files[0];if(fi&&fi.type.indexOf('image/')===0)go(fi);});
+  f.addEventListener('change',function(e){if(e.target.files[0])go(e.target.files[0]);});
+}
+function setRef(b,m,src){bR=b;mR=m;$('piR').src=src;$('pvR').style.display='block';ANA=null;LAYTXT={};LAYON={};renderLayers();if(cfg.oai)analyzeRef(false);}
+setupUpload('uzR','fiR','pvR','piR',function(b,m){setRef(b,m,$('piR').src);});
+function useAsRef(id){var r=RS[id];if(!r)return;setRef(r.b64,r.mime,urlOf(r));goTab(1);}
+
+function setGarment(k,input){
+  var f=input.files[0];if(!f)return;
+  readImage(f,1280,function(b,m,src){gar[k]=b;garM[k]=m;delete garD[k];$('sp-'+k).src=src;$('sl-'+k).classList.add('on');renderLayers();});
+  input.value='';
+}
+function clrGarment(e,k){e.stopPropagation();e.preventDefault();delete gar[k];delete garM[k];delete garD[k];$('sp-'+k).src='';$('sl-'+k).classList.remove('on');renderLayers();}
+
+/* ═════════════ HELPERS ═════════════ */
+function setStep(id,t){$(id).textContent=t;}
+function showErr(id,t){var el=$(id);el.textContent=t;el.style.display='block';}
+function hideErr(id){$(id).style.display='none';}
+function showLoad(id){$(id).style.display='block';}
+function hideLoad(id){$(id).style.display='none';}
+function needOai(eid){if(!cfg.oai){showErr(eid,'우측 상단 설정에서 OpenAI API 키를 저장해주세요.');openSet();return false;}return true;}
+function ab(cls,icon,text,fn,id){return '<button class="ab'+(cls?' '+cls:'')+'" onclick="'+fn+'(\''+id+'\')">'+icon+(text?'<span>'+text+'</span>':'')+'</button>';}
+function makeSlots(gid,n){
+  var g=$(gid);g.className='igrid '+(n<=1?'n1':'n2');
+  var h='';for(var i=0;i<n;i++)h+='<div class="icrd" id="'+gid+'_'+i+'"><div class="iload"><div class="dots"><span></span><span></span><span></span></div><div>생성 중...</div></div></div>';
+  g.innerHTML=h;
+}
+function fillCard(gid,i,id){
+  var it=RS[id],el=$(gid+'_'+i),a;
+  if(it.kind==='model')a=ab('p',IC.check,'이 모델로 확정','confirmModel',id)+ab('',IC.lock,'얼굴 고정','lockFace',id)+ab('',IC.dl,'저장','dl',id);
+  else a=ab('p',IC.dl,'저장','dl',id)+ab('',IC.reuse,'착장 레퍼런스로','useAsRef',id)+ab('',IC.hanger,'갤러리','goGal',id);
+  el.dataset.rid=id;
+  el.innerHTML='<img src="'+urlOf(it)+'" alt="" onclick="zoom(\''+id+'\',\''+gid+'\')"><button class="zbtn" title="확대" onclick="zoom(\''+id+'\',\''+gid+'\')">'+IC.zoom+'</button><div class="iov">'+a+'</div>';
+}
+function goGal(id){goTab(RS[id]&&RS[id].kind==='model'?2:3);}
+function failCard(gid,i,msg){var el=$(gid+'_'+i);if(el)el.innerHTML='<div class="ifail">'+esc(msg)+'</div>';}
+function dl(id){
+  var r=RS[id];if(!r)return;
+  var a=document.createElement('a');a.href=urlOf(r);a.download='styling_agent_'+r.kind+'_'+id+extOf(r.mime);
+  document.body.appendChild(a);a.click();a.remove();
+}
+
+/* ═════════════ API ═════════════ */
+var NOFID=false;
+async function pickOai(d){
+  if(d.error)throw new Error(d.error.message||'OpenAI 오류');
+  var it=d.data&&d.data[0];if(!it)throw new Error('이미지 없음');
+  if(it.b64_json)return {b64:it.b64_json,mime:'image/png'};
+  if(it.url){var bl=await (await fetch(it.url)).blob();return {b64:await blobToB64(bl),mime:bl.type||'image/png'};}
+  throw new Error('이미지 데이터 없음');
+}
+async function oaiGen(prompt,o){
+  var r=await fetch('https://api.openai.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.oai},
+    body:JSON.stringify({model:OAI_IMG,prompt:prompt,n:1,size:o.size||'1024x1536',quality:o.quality||'medium'})});
+  return pickOai(await r.json());
+}
+async function oaiEdit(images,prompt,o){
+  async function call(fid){
+    var fd=new FormData();
+    fd.append('model',OAI_IMG);
+    images.forEach(function(im,i){fd.append('image[]',imgBlob(im.b64,im.mime),(im.name||'img'+i)+extOf(im.mime));});
+    fd.append('prompt',prompt);fd.append('n','1');
+    fd.append('size',o.size||'1024x1536');fd.append('quality',o.quality||'medium');
+    if(fid)fd.append('input_fidelity','high');
+    var r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{'Authorization':'Bearer '+cfg.oai},body:fd});
+    return r.json();
+  }
+  var d=await call(o.fidelity&&!NOFID);
+  if(d.error&&/input_fidelity/i.test(d.error.message||'')){NOFID=true;d=await call(false);}
+  return pickOai(d);
+}
+async function oaiVision(images,text,maxTok,json){
+  var content=images.map(function(im){return {type:'image_url',image_url:{url:'data:'+im.mime+';base64,'+im.b64,detail:'high'}};});
+  content.push({type:'text',text:text});
+  var body={model:OAI_TXT,max_tokens:maxTok,messages:[{role:'user',content:content}]};
+  if(json)body.response_format={type:'json_object'};
+  var r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.oai},body:JSON.stringify(body)});
+  var d=await r.json();if(d.error)throw new Error(d.error.message);
+  return d.choices[0].message.content;
+}
+
+/* ═════════════ TAB 0: 모델 생성 ═════════════ */
+function buildModelPrompt(useFace){
+  var preset=curPreset();
+  var P=S.gender==='male'?'He':'She',p=[];
+  if(useFace)p.push('IMAGE 1 is the IDENTITY REFERENCE: the model must have exactly this face, facial features, hairstyle, hair color and skin tone. Ignore its clothing, pose and background.');
+  p.push('Create a model casting/base fitting photo for a fashion lookbook.');
+  p.push(FRAME);
+  p.push('BACKGROUND: '+BG[cfg.bg]+'.');
+  p.push('MODEL: '+BODY[S.gender]+' '+(useFace?'Face and hair exactly as in the identity reference.':preset.face)+' '+(S.gender==='male'?MODEL_COMMON_M:MODEL_COMMON_F));
+  if(S.gender==='male')p.push(useFace?IDOL_MALE.replace('Original fictional person, not resembling any real celebrity.','Apply this idol grooming and aura while keeping the identity reference face.'):IDOL_MALE);
+  p.push('EXPRESSION: '+VIBE[S.vibe]+'.');
+  p.push('POSE: '+P+' is '+POSE[S.pose]+'. '+POSE_PRO);
+  p.push('BASE FITTING OUTFIT (plain, no logos, no graphics): '+BASE_OUT[S.base]+'. No headwear, no eyewear, no bag, no jewelry or accessories; hair fully visible and neatly styled.');
+  var ex=$('t0extra').value.trim();
+  p.push(QUALITY);p.push(NEG);
+  if(ex){p.unshift(prio(ex));p.push(prioEnd(ex));}
+  return p.join('\n\n');
+}
+async function runT0(){
+  if(!needOai('er0'))return;
+  hideErr('er0');$('gb0').disabled=true;showLoad('ld0');
+  var useFace=!!(S.faceOn&&FACE&&FACE.b64),prompt=buildModelPrompt(useFace);
+  var preset=curPreset();
+  var label=(useFace?'고정 얼굴':preset.l)+' · '+lab(VIBE_O,S.vibe)+' · '+lab(POSE_O,S.pose);
+  makeSlots('ig0',S.n);$('rs0').style.display='block';
+  setStep('ls0','모델 후보 '+S.n+'장 생성 중...');
+  var ok=0,errs=[],idx=[];for(var i=0;i<S.n;i++)idx.push(i);
+  await Promise.all(idx.map(async function(i){
+    try{
+      var o=useFace?await oaiEdit([{b64:FACE.b64,mime:FACE.mime,name:'identity_reference'}],prompt,{size:'1024x1536',quality:S.qual,fidelity:true})
+                   :await oaiGen(prompt,{size:'1024x1536',quality:S.qual});
+      var id=addResult(o,'model',label,S.base);fillCard('ig0',i,id);ok++;
+    }catch(e){failCard('ig0',i,e.message);errs.push(e.message);}
+  }));
+  if(!ok)showErr('er0','모델 생성 실패: '+errs[0]);
+  $('rs0').scrollIntoView({behavior:'smooth',block:'start'});
+  hideLoad('ld0');$('gb0').disabled=false;$('gb0').textContent='다시 생성하기';
+}
+
+/* ═════════════ TAB 1: 스타일링 ═════════════ */
+var ANALYZE_PROMPT='You are a senior fashion stylist and garment technician. Analyze ONLY the outfit in this lookbook photo; ignore the person\'s face/identity, the background and any watermark or store-logo overlay. Be objective, no era labels.\n'+
+ 'For EACH layer write one dense English phrase covering: garment/item type, exact color, material/texture, fit and length, key details (prints, graphics and their placement, hardware, trims) AND exactly HOW and WHERE it is worn. Examples of the placement detail required: "paisley bandana tied over the head as a kerchief, knotted at the nape, tails hanging", "wraparound mirrored sport-shield sunglasses worn on the eyes" or "resting on the cap brim", "grey sweatshirt tied around the waist by its sleeves, knot at the front left hip", "lace-hem knit mini skirt layered over black wide pants", "mesh running vest worn over a long-sleeve top", "plaid shirt worn open under the jacket, hem extending below it", "purple boxer waistband peeking above the sweatpants", "white crew socks pulled up above the shoes", "backpack carried on one shoulder", "smartwatch on the left wrist".\n'+
+ 'Pay special attention to headwear stacking (bandana under/over cap), eyewear placement, garments tied around the waist, skirts layered over pants, vests, visible inner layers, waistband peeks, double belts and socks. Use "" when a layer is absent. "mid" = main top; "inner" = any layer visible beneath it; "waist_layer" = skirt over pants or garment tied at the waist.\n'+
+ 'When a brand logo or wordmark is visible, name the brand in that layer\'s phrase (e.g. "black beanie with Arc\'teryx jacquard logo").\n'+
+ 'Return ONLY JSON: {"layers":{"headwear":"","eyewear":"","outer":"","vest":"","mid":"","inner":"","waist_layer":"","bottom":"","legwear":"","shoes":"","bag":"","accessories":""},"layering_notes":"1-2 sentences describing the stacking order from inside to outside and which hems/cuffs/collars/waistbands are visible","palette":["#hex","#hex","#hex","#hex"],"palette_names":["","","",""],"style":"short style label"}';
+
+async function analyzeRef(force){
+  if(!bR)return;
+  if(!cfg.oai){openSet();return;}
+  if(ANA&&!force)return;
+  var t=$('layT');t.innerHTML='<div class="lempty"><div class="dots"><span></span><span></span><span></span></div><div style="margin-top:8px">레이어 분석 중...</div></div>';$('reanBtn').disabled=true;
+  try{
+    var raw=await oaiVision([{b64:bR,mime:mR}],ANALYZE_PROMPT,1400,true);
+    ANA=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    LAYTXT={};LAYON={};
+    var ly=ANA.layers||{};
+    LAYERS.forEach(function(g){var v=(ly[g.k]||'').trim();if(v){LAYTXT[g.k]=v;LAYON[g.k]=true;}});
+  }catch(e){ANA=null;t.innerHTML='<div class="lempty" style="color:#c4271c">분석 실패: '+esc(e.message)+'</div>';$('reanBtn').disabled=false;return;}
+  $('reanBtn').disabled=false;renderLayers();
+}
+function renderLayers(){
+  var t=$('layT');
+  if(!bR){t.innerHTML='<div class="lempty">레퍼런스를 올리면 자동으로 분석됩니다. 개별 슬롯만으로도 스타일링할 수 있습니다.</div>';$('layNote').textContent='';$('layPal').innerHTML='';return;}
+  if(!ANA){t.innerHTML='<div class="lempty">'+(cfg.oai?'분석 대기 중...':'설정에서 OpenAI 키를 저장하면 분석됩니다.')+'</div>';return;}
+  var rows=LAYERS.filter(function(g){return LAYTXT[g.k]!==undefined||gar[g.k];}).map(function(g){
+    if(gar[g.k])return '<div class="lrow"><span></span><b>'+g.l+'</b><span class="badge">개별 슬롯 이미지로 교체</span></div>';
+    var on=LAYON[g.k]!==false;
+    return '<div class="lrow'+(on?'':' off')+'"><input type="checkbox"'+(on?' checked':'')+' data-k="'+g.k+'"><b>'+g.l+'</b><input type="text" data-k="'+g.k+'" value="'+esc(LAYTXT[g.k])+'"></div>';
+  });
+  t.innerHTML=rows.join('')||'<div class="lempty">감지된 레이어 없음</div>';
+  $('layNote').textContent=ANA.layering_notes?('레이어링 · '+ANA.layering_notes):'';
+  $('layPal').innerHTML=(ANA.palette||[]).map(function(c,i){return '<div class="cdot" style="background:'+esc(c)+'" title="'+esc((ANA.palette_names||[])[i]||c)+'"></div>';}).join('')+(ANA.style?'<span style="margin-left:6px">'+esc(ANA.style)+'</span>':'');
+}
+$('layT').addEventListener('change',function(e){
+  var k=e.target.dataset.k;if(!k)return;
+  if(e.target.type==='checkbox'){LAYON[k]=e.target.checked;e.target.closest('.lrow').classList.toggle('off',!e.target.checked);}
+});
+$('layT').addEventListener('input',function(e){var k=e.target.dataset.k;if(k&&e.target.type==='text')LAYTXT[k]=e.target.value;});
+
+async function describeSlots(keys){
+  await Promise.all(keys.map(async function(k){
+    if(garD[k])return;
+    try{garD[k]=(await oaiVision([{b64:gar[k],mime:garM[k]}],'Describe this '+L(k).e.toLowerCase()+' item for a virtual try-on prompt in one dense factual English sentence: item type, exact color, material/texture, pattern or graphic and its placement, fit, length, key construction details, and how it is typically worn. No style labels.',220,false)).trim();}
+    catch(e){garD[k]='exactly as shown in its image';}
+  }));
+}
+function buildStylePrompt(refIdx,slotIdx,faceIdx){
+  var P=MODEL.src==='gen'?'the model':'the person',p=[];
+  var baseTxt=MODEL.base&&BASE_OUT[MODEL.base]?BASE_OUT[MODEL.base]:BASE_GENERIC;
+  p.push('IMAGE 1 is the BASE MODEL. Keep the exact same person: identical face, facial features, hairstyle, hair color, skin tone, height and body proportions — keep the exact shoulder width and body silhouette of IMAGE 1, never narrow the shoulders.'+
+    (MODEL.src==='gen'?' Completely REMOVE the base fitting outfit ('+baseTxt+') — nothing of it may remain unless it is listed below or marked KEEP.':' Replace the clothing with the outfit below; keep nothing of the original clothing unless listed or marked KEEP.'));
+  if(refIdx)p.push('IMAGE '+refIdx+' is the OUTFIT REFERENCE photo: take ONLY the items listed below that are marked "from IMAGE '+refIdx+'", reproducing exactly how they look AND how they are worn (placement, knotting, stacking, layering). Never copy its person, face, hair, body, pose, background, crop or any overlaid text/store logo.');
+  Object.keys(slotIdx).forEach(function(k){p.push('IMAGE '+slotIdx[k]+' is a product image of the '+L(k).e.toLowerCase()+' — reproduce it precisely.');});
+  if(faceIdx)p.push('IMAGE '+faceIdx+' is a close-up IDENTITY reference of the same model\'s face: match the face exactly.');
+  p.push(FRAME);
+  p.push('BACKGROUND: '+BG[cfg.bg]+'.');
+  p.push('EXPRESSION: '+(T.vibe==='keep'?'keep the exact expression from IMAGE 1':VIBE[T.vibe])+'.');
+  p.push('POSE: '+(T.pose==='keep'?'keep the exact pose, stance and camera angle of IMAGE 1, adjusting only hands where needed to hold or wear the items naturally':P+' is '+POSE[T.pose])+'. '+POSE_PRO);
+  var lines=[];
+  LAYERS.forEach(function(g){
+    var k=g.k,v='';
+    if(gar[k])v=garD[k]+' (from IMAGE '+slotIdx[k]+')';
+    else if(k==='headwear'&&T.hw!=='ref')v=T.hw==='none'?'':HW[T.hw];
+    else if(k==='eyewear'&&T.eye!=='ref')v=T.eye==='none'?'':EYE[T.eye];
+    else if(k==='bag'&&T.bag!=='ref')v=T.bag==='none'?'':BAG[T.bag];
+    else if(refIdx&&LAYON[k]!==false&&(LAYTXT[k]||'').trim())v=LAYTXT[k].trim()+' (from IMAGE '+refIdx+')';
+    if(v)lines.push('- '+g.e+': '+v);
+  });
+  var nones=[];
+  if(T.hw==='none'&&!gar.headwear)nones.push('no headwear');
+  if(T.eye==='none'&&!gar.eyewear)nones.push('no eyewear');
+  if(T.bag==='none'&&!gar.bag)nones.push('no bag');
+  p.push('OUTFIT ('+FID[T.fid]+') — dress '+P+' in exactly these items, top to bottom and outermost to innermost:\n'+lines.join('\n')+(nones.length?'\n- '+nones.join(', '):''));
+  var has=function(re){return lines.some(function(x){return re.test(x);});};
+  var keep=[];
+  if(!has(/^- (Outerwear|Vest|Main top|Inner layer)/))keep.push('top');
+  if(!has(/^- Bottoms/))keep.push('bottoms');
+  if(!has(/^- Shoes/))keep.push('shoes');
+  if(keep.length)p.push('KEEP: the '+keep.join(', ')+' from IMAGE 1 stay exactly as they are (these are not being replaced). Everything else from the base outfit is replaced by the items above.');
+  var rules='HOW IT IS WORN: stack from the inside out (inner layer → main top → vest → outerwear); the waist layer sits over the bottoms (a skirt layered over the pants, or a garment tied around the waist by its sleeves with the knot at the front hip); headwear sits on the head exactly as described (a bandana tied over the head is knotted at the nape; if worn with a cap, follow the stated under/over order); eyewear is placed exactly as described (on the eyes, on the cap brim or on top of the head); visible hems, cuffs, collars, waistband peeks and socks must read clearly.';
+  if(refIdx&&ANA&&ANA.layering_notes)rules+=' Reference stacking: '+ANA.layering_notes;
+  p.push(rules);
+  if(T.lay.length)p.push('ADD THESE LAYERING DETAILS (blend with the outfit above, keep its palette):\n'+T.lay.map(function(k){return '- '+LAY[k];}).join('\n'));
+  if(T.mat.length)p.push('MATERIAL EMPHASIS: '+T.mat.map(function(k){return MAT[k];}).join('; ')+'.');
+  if(T.team){
+    var pos=T.mlbPos,hasHead=has(/^- Headwear/);
+    if(pos!=='chest'&&!hasHead)pos='chest';
+    var mark='an embroidered MLB '+TEAM[T.team]+' team logo';
+    p.push('MLB MARK: '+(pos==='cap'?mark+' on the front of the headwear':pos==='chest'?mark+' on the left chest of the main top or outerwear':mark+' on the front of the headwear and a smaller one on the chest')+'. Render the logo cleanly and correctly.');
+  }
+  if(cfg.logo)p.push(LOGO_POLICY);
+  var ex=$('t1extra').value.trim();
+  p.push(QUALITY);p.push(NEG);
+  if(ex){p.unshift(prio(ex));p.push(prioEnd(ex));}
+  return {prompt:p.join('\n\n'),count:lines.length};
+}
+async function runT1(){
+  if(!(MODEL&&MODEL.b64)){showErr('er1','확정 모델이 없습니다. 모델 생성 탭이나 모델 갤러리에서 확정해주세요.');return;}
+  if(!needOai('er1'))return;
+  var slotKeys=SLOT_KEYS.filter(function(k){return gar[k];});
+  var hasOverride=T.hw!=='ref'||T.eye!=='ref'||T.bag!=='ref'||T.lay.length;
+  if(!bR&&!slotKeys.length&&!hasOverride){showErr('er1','착장 레퍼런스 사진이나 개별 아이템을 하나 이상 넣어주세요.');return;}
+  hideErr('er1');$('gb1').disabled=true;showLoad('ld1');
+  try{
+    if(bR&&!ANA){setStep('ls1','레퍼런스 레이어 분석 중...');await analyzeRef(false);if(!ANA)throw new Error('레퍼런스 분석 실패');}
+    if(slotKeys.length){setStep('ls1','개별 아이템 '+slotKeys.length+'개 분석 중...');await describeSlots(slotKeys);}
+    var imgs=[{b64:MODEL.b64,mime:MODEL.mime,name:'base_model'}],refIdx=0,slotIdx={},faceIdx=0;
+    if(bR){imgs.push({b64:bR,mime:mR,name:'outfit_reference'});refIdx=imgs.length;}
+    slotKeys.forEach(function(k){imgs.push({b64:gar[k],mime:garM[k],name:k});slotIdx[k]=imgs.length;});
+    if(MODEL.src==='gen'&&MFACE&&MFACE.b64){imgs.push({b64:MFACE.b64,mime:MFACE.mime,name:'identity_face'});faceIdx=imgs.length;}
+    var built=buildStylePrompt(refIdx,slotIdx,faceIdx);
+    if(!built.count)throw new Error('입힐 아이템이 없습니다. 레이어 표 체크나 슬롯을 확인해주세요.');
+    renderPc1(built.prompt);
+    var label=[ANA&&ANA.style?ANA.style:(bR?'레퍼런스':''),slotKeys.length?'슬롯 '+slotKeys.length:'',T.pose==='keep'?'포즈 유지':lab(POSE_O,T.pose)].filter(Boolean).join(' · ');
+    makeSlots('ig1',T.n);$('rs1').style.display='block';
+    setStep('ls1','스타일링 '+T.n+'장 생성 중...');
+    var ok=0,errs=[],idx=[];for(var i=0;i<T.n;i++)idx.push(i);
+    await Promise.all(idx.map(async function(i){
+      try{var o=await oaiEdit(imgs,built.prompt,{size:'1024x1536',quality:T.qual,fidelity:true});var id=addResult(await finalize(o),'style',label);fillCard('ig1',i,id);ok++;}
+      catch(e){failCard('ig1',i,e.message);errs.push(e.message);}
+    }));
+    if(!ok)showErr('er1','스타일링 실패: '+errs[0]);
+    $('rs1').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){showErr('er1','오류: '+e.message);}
+  finally{hideLoad('ld1');$('gb1').disabled=false;$('gb1').textContent='다시 스타일링';}
+}
+function renderPc1(prompt){
+  $('pc1').innerHTML='<div class="pcrd"><span class="tag">'+OAI_IMG+'</span><button class="btn sm" id="cpyb1">복사</button><div class="ptxt">'+esc(prompt)+'</div></div>';
+  $('cpyb1').onclick=function(){navigator.clipboard.writeText(prompt).then(function(){$('cpyb1').textContent='복사됨';setTimeout(function(){$('cpyb1').textContent='복사';},2000);});};
+}
+
+/* ═════════════ INIT ═════════════ */
+initUI();
+dbOpen().then(dbAll).then(function(items){
+  (items||[]).forEach(function(it){RS[it.id]=it;});
+  GAL=(items||[]).sort(function(a,b){return b.ts-a.ts;});
+  renderGalleries();
+});
+</script>
+</body>
+</html>
